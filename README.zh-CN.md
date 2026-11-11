@@ -1,5 +1,9 @@
 **语言 / Language:** [English](README.md) | [简体中文](README.zh-CN.md)
 
+[![A7M5 探针 CI](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/a7m5-probe.yml/badge.svg)](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/a7m5-probe.yml)
+
+[![仓库质量检查](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/quality.yml/badge.svg)](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/quality.yml)
+
 # SonyFastConnect
 
 SonyFastConnect 是一个以本地优先为原则的 Sony 相机照片传输与遥控可行性项目，
@@ -21,12 +25,17 @@ SonyFastConnect 是一个以本地优先为原则的 Sony 相机照片传输与�
 
 - [产品需求与系统设计](REQUIREMENTS_AND_DESIGN.md)
 - [A7M5 协议探针](tools/a7m5-probe/README.md)
+- [A7M5 Step 1 真机验证手册](docs/A7M5_STEP1_RUNBOOK.md)
+- [A7M5 协议证据矩阵](docs/A7M5_PROTOCOL_EVIDENCE_MATRIX.md)
+- [安全策略](SECURITY.md)
 
 ## 协议探针
 
 当前第一个开发产物是位于 `tools/a7m5-probe` 的命令行实验工具，可在
 Windows 或 macOS 上运行，覆盖：
 
+- 相机 TCP 可达性与本机网络诊断
+- 结构化证据目录和环境清单
 - PTP/IP 连接与设备信息读取
 - Sony SDIO 能力协商
 - 相机内容列表读取

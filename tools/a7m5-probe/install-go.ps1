@@ -6,13 +6,14 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$GoVersion = "1.26.2"
+$GoVersion = "1.27.4"
 $MinimumMajor = 1
-$MinimumMinor = 26
+$MinimumMinor = 27
+$MinimumPatch = 4
 $DownloadBase = "https://go.dev/dl"
 $ExpectedHashes = @{
-    "AMD64" = "98eb3570bade15cb826b0909338df6cc6d2cf590bc39c471142002db3832b708"
-    "ARM64" = "094d05caaf6ba235e2bd570b625d064ceb65943866252722a8f3fdba232139c6"
+    "AMD64" = "178ab98950ac69ab25069307dc6ade79f3816e414cce95b4da166a115cde1e7e"
+    "ARM64" = "9e7a72565792b8ab370b37ac9ac109799237abacb39ff2f541c438b963c0cc64"
 }
 
 function Get-CompatibleGoVersion {
@@ -26,12 +27,17 @@ function Get-CompatibleGoVersion {
     catch {
         return $false
     }
-    if ($versionText -notmatch '^go(\d+)\.(\d+)') {
+    if ($versionText -notmatch '^go(\d+)\.(\d+)\.(\d+)') {
         return $false
     }
     $major = [int]$Matches[1]
     $minor = [int]$Matches[2]
-    return ($major -gt $MinimumMajor) -or (($major -eq $MinimumMajor) -and ($minor -ge $MinimumMinor))
+    $patch = [int]$Matches[3]
+    return ($major -gt $MinimumMajor) -or (
+        ($major -eq $MinimumMajor) -and (
+            ($minor -gt $MinimumMinor) -or (($minor -eq $MinimumMinor) -and ($patch -ge $MinimumPatch))
+        )
+    )
 }
 
 function Add-UserPathEntry {
@@ -57,6 +63,13 @@ if (-not $ExpectedHashes.ContainsKey($architecture)) {
     throw "Unsupported Windows architecture '$architecture'. Supported: AMD64, ARM64."
 }
 
+$localPrograms = Join-Path $env:LOCALAPPDATA "Programs\Go"
+$installRoot = Join-Path $localPrograms $GoVersion
+$installBin = Join-Path $installRoot "bin"
+if (Test-Path -LiteralPath (Join-Path $installBin "go.exe")) {
+    Add-UserPathEntry -Directory $installBin
+}
+
 if (Get-CompatibleGoVersion) {
     Write-Host "Compatible Go is already installed: $(& go version)" -ForegroundColor Green
 }
@@ -66,9 +79,6 @@ else {
     $workRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("sonyfastconnect-go-" + [guid]::NewGuid().ToString("N"))
     $archivePath = Join-Path $workRoot $archiveName
     $extractRoot = Join-Path $workRoot "extract"
-    $localPrograms = Join-Path $env:LOCALAPPDATA "Programs\Go"
-    $installRoot = Join-Path $localPrograms $GoVersion
-
     New-Item -ItemType Directory -Path $workRoot -Force | Out-Null
     try {
         Write-Host "Downloading official Go $GoVersion for Windows $architecture..."
@@ -102,7 +112,7 @@ else {
         }
     }
 
-    Add-UserPathEntry -Directory (Join-Path $installRoot "bin")
+    Add-UserPathEntry -Directory $installBin
 }
 
 if (-not (Get-CompatibleGoVersion)) {

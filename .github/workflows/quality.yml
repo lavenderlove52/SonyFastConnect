@@ -1,0 +1,57 @@
+name: Repository quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  quality:
+    name: Links, vulnerabilities and workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check local Markdown links
+        run: python3 scripts/check_markdown_links.py .
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/a7m5-probe/go.mod
+          cache-dependency-path: tools/a7m5-probe/go.sum
+
+      - name: Check GitHub Actions syntax
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@latest
+          "$(go env GOPATH)/bin/actionlint" .github/workflows/*.yml
+
+      - name: Check Go vulnerabilities
+        working-directory: tools/a7m5-probe
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          "$(go env GOPATH)/bin/govulncheck" ./...
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for committed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

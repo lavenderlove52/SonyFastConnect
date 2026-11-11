@@ -1,5 +1,9 @@
 **语言 / Language:** [English](README.md) | [简体中文](README.zh-CN.md)
 
+[![A7M5 probe CI](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/a7m5-probe.yml/badge.svg)](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/a7m5-probe.yml)
+
+[![Repository quality](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/quality.yml/badge.svg)](https://github.com/lavenderlove52/SonyFastConnect/actions/workflows/quality.yml)
+
 # SonyFastConnect
 
 SonyFastConnect is an early feasibility project for local-first Sony camera
@@ -22,12 +26,17 @@ The target validation environment is:
 
 - [Product requirements and system design](REQUIREMENTS_AND_DESIGN.md)
 - [A7M5 protocol probe](tools/a7m5-probe/README.md)
+- [A7M5 Step 1 hardware verification runbook](docs/A7M5_STEP1_RUNBOOK.md)
+- [A7M5 protocol evidence matrix](docs/A7M5_PROTOCOL_EVIDENCE_MATRIX.md)
+- [Security policy](SECURITY.md)
 
 ## Protocol probe
 
 The first development artifact is a command-line experiment under
 `tools/a7m5-probe`. It can run on Windows or macOS and covers:
 
+- Camera TCP reachability and local network diagnostics
+- Structured evidence directories and environment manifests
 - PTP/IP connection and device information
 - Sony SDIO capability negotiation
 - Content listing

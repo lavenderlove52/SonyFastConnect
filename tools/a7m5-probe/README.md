@@ -44,14 +44,14 @@ validation.
   `a7m5-probe` directory and run the existing binary. Go is not required unless
   you want to modify, test or rebuild the source.
 - Windows computer without a compatible binary: double-click `install-go.cmd`.
-  It installs Go 1.26.2 per user, verifies the official SHA-256, runs the tests
+  It installs Go 1.27.4 per user, verifies the official SHA-256, runs the tests
   and rebuilds `a7m5-probe.exe`.
-- macOS: run `chmod +x install-go.sh && ./install-go.sh`. It installs Go 1.26.2
+- macOS: run `chmod +x install-go.sh && ./install-go.sh`. It installs Go 1.27.4
   per user after checksum verification, updates the shell profile, runs the
   tests and builds a native probe binary. `install-go.command` can later be
   launched from Finder after making it executable.
 
-The installers pin `https://go.dev/dl` archives for Go 1.26.2. They do not use
+The installers pin `https://go.dev/dl` archives for Go 1.27.4. They do not use
 administrator privileges and do not overwrite a different versioned install
 directory.
 
@@ -59,6 +59,21 @@ directory.
 
 Join the camera Wi-Fi manually, then determine the camera IP from the camera or
 the network configuration. Run the stages separately and save each report.
+
+Create a structured evidence directory first:
+
+```powershell
+.\a7m5-probe.exe evidence-init --firmware <camera-firmware> --label run1
+```
+
+Check local interfaces and expected TCP ports:
+
+```powershell
+.\a7m5-probe.exe diagnose --host 192.168.122.1
+```
+
+An open TCP port only proves reachability. It does not prove PTP/IP, DLNA or
+live-view compatibility.
 
 1. Read-only PTP/IP and DeviceInfo probe:
 
@@ -114,3 +129,10 @@ For every run, record:
 
 The tool deliberately does not automate BLE pairing, Wi-Fi joining, SSH access
 authentication or live-view verification. Those require separate A7M5 tests.
+
+Use the full [A7M5 Step 1 hardware verification runbook](../../docs/A7M5_STEP1_RUNBOOK.md)
+for test order, evidence layout and Go/No-Go criteria.
+
+Cross-check every observed capability against the
+[A7M5 protocol evidence matrix](../../docs/A7M5_PROTOCOL_EVIDENCE_MATRIX.md)
+instead of carrying over A7R V or A6700 conclusions.

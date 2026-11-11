@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-GO_VERSION="1.26.2"
+GO_VERSION="1.27.4"
 DOWNLOAD_BASE="https://go.dev/dl"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -23,26 +23,31 @@ case "$(uname -m)" in
 esac
 
 case "$architecture" in
-    arm64) expected_sha256="32af1522bf3e3ff3975864780a429cc0b41d190ec7bf90faa661d6d64566e7af" ;;
-    amd64) expected_sha256="bc3f1500d9968c36d705442d90ba91addf9271665033748b82532682e90a7966" ;;
+    arm64) expected_sha256="91a44a2b8a716600ad94a4f143e156116620db8828086a6e3602291be9bd0bb4" ;;
+    amd64) expected_sha256="2b799377704ef12db39bd254995d5c348c9cc8d86562ca817724390e56c38f43" ;;
 esac
 
 go_is_compatible() {
     command -v go >/dev/null 2>&1 || return 1
-    local version major minor
+    local version major minor patch
     version="$(go env GOVERSION 2>/dev/null)" || return 1
-    if [[ ! "$version" =~ ^go([0-9]+)\.([0-9]+) ]]; then
+    if [[ ! "$version" =~ ^go([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
         return 1
     fi
     major="${BASH_REMATCH[1]}"
     minor="${BASH_REMATCH[2]}"
-    (( major > 1 || (major == 1 && minor >= 26) ))
+    patch="${BASH_REMATCH[3]}"
+    (( major > 1 || (major == 1 && (minor > 27 || (minor == 27 && patch >= 4))) ))
 }
+
+install_root="${HOME}/.local/go/${GO_VERSION}"
+if [[ -x "$install_root/bin/go" ]]; then
+    export PATH="$install_root/bin:$PATH"
+fi
 
 if go_is_compatible; then
     echo "Compatible Go is already installed: $(go version)"
 else
-    install_root="${HOME}/.local/go/${GO_VERSION}"
     archive_name="go${GO_VERSION}.${platform}-${architecture}.tar.gz"
     download_url="${DOWNLOAD_BASE}/${archive_name}"
     work_root="$(mktemp -d "${TMPDIR:-/tmp}/sonyfastconnect-go.XXXXXX")"
