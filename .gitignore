@@ -1,0 +1,20 @@
+# Local editor/agent settings
+.claude/
+.idea/
+.vscode/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Generated protocol evidence and partial downloads
+artifacts/
+*.part
+
+# Generated executables
+*.exe
+tools/a7m5-probe/a7m5-probe
+
+# Local dependency/build caches
+.cache/
+coverage.out
