@@ -1,3 +1,5 @@
+**语言 / Language:** [English](README.md) | [简体中文](README.zh-CN.md)
+
 # SonyFastConnect
 
 SonyFastConnect is an early feasibility project for local-first Sony camera
